@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Document</title>
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+          <script src="cookie.js"></script>
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+          <style>
+                    body{
+                              background-image: url(loginpage.jpg);
+                              background-repeat: no-repeat;
+                              /* border: 4px solid black; */
+                              padding-top: 16%;
+                              position: sticky;
+                              background-size: cover;
+                              /* backface-visibility: hidden; */
+                    }      
+                    p{
+                              color: red;
+                    }   
+          </style>
+</head>
+<body style="text-align: center;">
+                    <h1 >Login form</h1>
+                    <hr>
+                    <label for=""> <b> E-mail : </b></label>
+                    <input type="text" name="email" id="email"> <br> <br>
+                    <label for="" > <b>password : </b> </label>
+                    <input type="password" name="password" id="password"> <br> <br>
+                    <button onclick="login()" class="btn btn-success">Submit</button> <br>
+                  <br>  <p>Don't have an account then register....</p> <br>
+                    <a href="register.html"><button  class="btn btn-primary">Register</button></a>
+                    
+                    <script>
+          function login(){
+                    let email = $("#email").val();
+                    let password = $("#password").val();
+                    let data = {
+                              data: {
+                                        email:email,
+                                        password:password
+                              }
+                    }
+                    $.ajax({
+                    type: 'post',
+                    url: 'http://localhost:8081/login',
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    traditional: true,
+                    success: function (result) {                    
+                    result = JSON.parse(result);
+                    console.log(result);
+                    if(result.status == "Success")
+                    {
+                    setcookie("usertype", "user");
+                    setcookie("userid", result.data[0].id);
+                    setcookie("username", result.data[0].name);
+                    window.location.replace("http://localhost:8081/user");
+                    }
+                    else{
+                    alert("Wrong credentials");
+                    }
+                    },
+                    error: function (err) {
+                    console.log(err);
+                    }
+});
+          }
+                    </script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Document</title>
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+          <script src="cookie.js"></script>
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+         <!-- <link rel="stylesheet" href="index"> -->
+         <style>
+             body{
+                              background-image: url(registerimage.jpg);
+                              background-repeat: no-repeat;
+                              /* border: 4px solid black; */
+                              padding-top: 14%;
+                              position: sticky;
+                              background-size: cover;
+                              /* backface-visibility: hidden; */
+                    }      
+                    p{
+                              color: red;
+                    }   
+         </style>
+</head>
+<body style="text-align: center;">
+    <table>
+          <h1>Register here..!</h1>
+          <hr>
+          <label for=""> <b> Name : </b></label>
+          <input type="text" name="name" id="name"> <br> <br>
+          <label for=""> <b> E-mail : </b></label>
+          <input type="email" name="email" id="email"> <br> <br>
+          <label for="" > <b>Create password : </b> </label>
+          <input type="password" name="password" id="password"> <br> <br>
+          <label for="" > <b>Confirm password : </b> </label>
+          <input type="password" name="password" id="password2"> 
+          <input type="checkbox" onclick="myid()" > <br> <br>
+        </table>
+          <button onclick="register()" class="btn btn-success">Submit</button> <br>
+           <p style="color: red;">if you have already registered then click here....</p>
+          
+           <a href="index.html"> <button class="btn btn-warning">Login</button></a>
+          
+          <script>
+               
+                   
+
+                     function myid() {
+            var p = document.getElementById("password");
+            var p1 = document.getElementById("password2");
+            if (p.type === "password") {
+                p.type = "text";
+                p1.type = "text";
+            } else {
+                p.type = "password";
+                p1.type = "password";
+
+
+            }
+        }
+        
+
+        function register() {
+            let name = $("#name").val();
+            let email = $("#email").val();
+            let password = $("#password").val();
+            let password2= $("#password2").val();
+           
+            if(name== ""){
+                      alert("please Enter your name");
+                      $("#name").focus();
+                      return ;
+                      //document.getElementById("name").focus();
+            }
+            if (valideemail(email) == false) {
+                alert("please enter your valide email")
+                document.getElementById("email").focus();
+                return;
+
+            }
+            if(password== ""){
+                      alert("please Create Password");
+                      $("#password").focus();
+                      return ;
+                      //document.getElementById("name").focus();
+            }
+            
+            if(password !=password2){
+                    alert("please Confirm Password");
+                      $("#password2").focus();
+                      return ;
+            }
+            
+
+                              let data = {
+                                        data: {
+                                                  name:name,
+                                                  email:email,
+                                                  password:password
+                                        }
+                              }
+                              $.ajax({
+                              type: 'post',
+                              url: 'http://localhost:8081/register',
+                              data: JSON.stringify(data),
+                              contentType: "application/json; charset=utf-8",
+                              traditional: true,
+                              success: function (result) {                    
+                              result = JSON.parse(result);
+                              console.log(result);
+                              if(result.data.status=="Success"){
+                              setcookie("usertype", "user");
+                              setcookie("userid", result.data.id);
+                              setcookie("username",name);
+                              window.location.replace("http://localhost:8081/user");
+                              
+                    }
+                    else
+                    {
+                              alert("E-mail already exists");
+                    }
+                              },
+                              error: function (err) {
+                              console.log(err);
+                              }
+          });
+
+                    }
+                    function valideemail(email) {
+
+var pattern = new RegExp(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
+return pattern.test(email);
+}
+                              </script>
+</body>
+</html>

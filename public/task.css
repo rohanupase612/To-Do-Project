@@ -1,0 +1,57 @@
+
+body{ 
+    background-image: url(images/baground.png);
+    background-color: black;
+    
+}
+
+
+#head{
+color:rgba(173, 93, 17, 0.883);
+    border-radius: 30px;
+    text-align: center ;
+    width: 86%;
+    color: cornsilk;
+}
+
+#ctn{
+        color: burlywood;
+        
+        margin-top: 15px;
+        border-radius: 35px;
+       
+}
+
+@media only screen and (max-width: 600px){  
+    #ctn{
+        height: auto;
+    }
+}
+#mytable{
+      font-family: sans-serif;
+      color: antiquewhite;
+      margin-top: 20px;
+      table-layout:fixed;
+}
+#cnc{
+    margin-top: 20px;
+    margin-left: 30px;
+    padding: 5px;
+    background-color: rgba(10, 37, 187, 0.739);
+}
+#sev{
+    margin-top: 20px; 
+    margin-left: 30px;
+    padding: 5px;
+    background-color: rgb(28, 193, 223);
+}
+#sev:hover{
+       background-color: green;
+}
+#cnc:hover{
+     background-color: red;
+}
+#task{
+    
+      
+}

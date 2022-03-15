@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <link rel="stylesheet" href="task.css">
+      <script src="cookie.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <div id="head" class="container">
+        <h1> <b> <i> TO DO  LIST </i><b></h1>
+    </div>
+    <div id="ctn" class=" container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="col-lg-4 ">
+                    <h4> Date </h4>
+                    <input id="id" type="hidden">
+                    <input id="date" class="form-control shadow" type="date">
+                </div>
+                <div class="col-lg-4" style="margin: 1px;">
+                    <h4> Time </h4>
+                    <input id="time" class="form-control shadow" type="time">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h4>Task</h4>
+                <input id="task" class="form-control shadow text-primary" type="text" placeholder="Enter Task">
+            </div>
+
+        </div>
+        <div class="row ">
+            <div class="col-lg-8" style="margin-top: 20px;">
+                <div class="col-lg-4">
+                    <button id="sev" onclick="save()" type="button"> Save</button>
+                    <button  id="cnc" onclick="cancel(this)"type="button"> cancel</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <table id="mytable" class="table">
+            <thead>
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Task</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <script>
+cancel = (cancel)=>{
+             if(cancel==cancel){
+            document.getElementById("date").value = "";
+            document.getElementById("time").value = "";
+            document.getElementById("task").value = "";
+ 
+             }
+
+         }
+           
+         save = () => {   
+            let id = Number(document.getElementById("id").value);                                                     // arrow function
+            let date = document.getElementById("date").value;
+            let time = document.getElementById("time").value;
+            let task = document.getElementById("task").value.trim();
+            if (date == "") {
+                document.getElementById("date").focus();
+                return;
+            }
+            if (time == "") {
+                document.getElementById("time").focus();
+                return;
+            }
+            if (task == "") {
+                document.getElementById("task").focus();
+                return;
+            }
+
+            let data = {
+                data: {
+                    id: id,
+                    user_id: getcookie("userid"),
+                    t_date:date,
+                    t_time:time,
+                    task:task
+                }
+            }
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8081/savetask',
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                traditional: true,
+                success: function (result) {                    
+                    result = JSON.parse(result);
+                    console.log(result);
+                    if(result.status == "inserted")
+                    {                        
+                        document.getElementById("id").value = 0;
+                        document.getElementById("date").value = "";
+                        document.getElementById("time").value = "";
+                        document.getElementById("task").value = "";
+                        list();
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });            
+        }
+
+        //     let tasks = new Array(); 
+        //     if (localStorage.getItem("tasks") != null) {
+        //         tasks = JSON.parse(localStorage.getItem("tasks"));           //NULL NOT THEN ARRAY CONVERT STRING
+        //     }
+        //     if (id == 0) {
+        //         let newid = 1;
+        //         let lastid = 0;
+        //         tasks.forEach(task => {
+        //             if (task.id > lastid)
+        //                 lastid = task.id;
+        //         });
+        //         newid = lastid + 1;
+        //         let ttask = { id: newid, date: date, time: time, task: task, status: 'open' };
+        //         tasks.push(ttask);
+        //     }
+        //     else {
+        //         for (let i = 0; i < tasks.length; i++) {
+        //             if (tasks[i].id == id) {
+        //                 tasks[i].date = date;
+        //                 tasks[i].time = time;
+        //                 tasks[i].task = task;
+        //             }
+        //         }
+        //     }
+
+        //     localStorage.setItem("tasks", JSON.stringify(tasks));
+        //     document.getElementById("date").value = "";
+        //     document.getElementById("time").value = "";
+        //     document.getElementById("task").value = "";
+        //     list();
+        // }
+        list = () => {
+            let data = {
+                data: {
+                    user_id: getcookie("userid")
+                }
+            }
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8081/listtask',
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                traditional: true,
+                success: function (result) {                    
+                    result = JSON.parse(result);
+                    
+                    let tasks = result.data;
+                    console.log("result : "+tasks);
+                    let mytable = document.getElementById("mytable");
+                let rowcount = mytable.rows.length;
+                if (rowcount > 1) {
+                    for (let i = 1; i < rowcount; i++) {
+                        mytable.deleteRow(1);
+                    }
+                }
+
+                let count = 0;
+                tasks.forEach(task => {
+                    count++;
+
+                    let row = mytable.insertRow(mytable.rows.length);
+                    let cell0 = row.insertCell(0);
+                    let cell1 = row.insertCell(1);
+                    let cell2 = row.insertCell(2);
+                    let cell3 = row.insertCell(3);
+                    let cell4 = row.insertCell(4);
+                    let cell5 = row.insertCell(5);
+
+                    cell0.innerHTML = count;
+                    cell1.innerHTML = task.t_date;
+                    cell2.innerHTML = task.t_time;
+                    cell3.innerHTML = task.task;
+                    cell4.innerHTML = task.status;
+                    cell5.innerHTML = "<button class='btn btn-primary me-2'onclick='edittask(" + task.id + ")'><i class='fa fa-edit'></i></button>";
+                    cell5.innerHTML += "<button class='btn btn-danger me-2' onclick='deletetask(" + task.id + ")'><i class='fa fa-trash'></i></button>";
+                    if (task.status == "open")
+                        cell5.innerHTML += "<button  class='btn btn-secondary' onclick='changestatus(" + task.id + ",\"close\")'><i class='fa fa-close'></i></button>";
+                    else
+                        cell5.innerHTML += "<button class='btn btn-warning' onclick='changestatus(" + task.id + ",\"open\")'><i class='fa fa-check'></i></button>";
+                    });
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });            
+        }
+            edittask = (id) => {
+            let data = {
+                data:{
+                    id:id
+                }
+            };
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8081/gettask',
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                traditional: true,
+                success: function (result) {                    
+                    result = JSON.parse(result);
+                    let task = result.data[0];
+                    document.getElementById("id").value = id
+                    document.getElementById("date").value = task.t_date;
+                    document.getElementById("time").value = task.t_time;
+                    document.getElementById("task").value = task.task;
+                },
+                error:function(err){
+            
+                }});
+        }
+
+        changestatus = (id, status) => {
+            if(confirm("Sure to change status")){
+                let data = {
+                data:{
+                    id:id,
+                    status:status
+                }
+            };
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8081/changestatus',
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                traditional: true,
+                success: function (result) {                    
+                    list();
+                },
+                error:function(err){
+            
+                }});
+        }
+    } 
+
+    deletetask = (id) => {
+            if (confirm("Sure to delete")) {
+                let data = {
+                data:{
+                    id:id
+                }
+            };
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8081/deletetask',
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                traditional: true,
+                success: function (result) {                    
+                    list();
+                },
+                error:function(err){
+            
+                }});
+            }
+        }
+
+        list();    
+    </script>
+</body>
+
+</html>
